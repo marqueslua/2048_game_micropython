@@ -1,6 +1,7 @@
 import lvgl as lv
 from src import display_tools
 from src import logic
+from src import color_map as cm
 
 # creates an ampty matrix with an unique tile
 mat = logic.start_game()
@@ -59,7 +60,7 @@ def load_scr():
         obj.set_size(43, 43)
         obj.clear_flag(lv.obj.FLAG.SCROLLABLE)
         label = lv.label(obj)
-        label.set_text(str(min(2**i, 2048)))
+        label.set_text(' ')
         label.center()
 
 # run a command up, down, left or right
@@ -69,18 +70,8 @@ def run(user_input):
     try:
         # we have to move up
         if(user_input == 'w'):
-            user_input = None
             # call the move_up function
             mat, flag = logic.move_up(mat)
-    
-            # get the current state and print it
-            status = logic.get_current_state(mat)
-            #print(status)
-    
-            # if game not over then continue
-            # and add a new two
-            if(status == 'GAME NOT OVER'):
-                logic.add_new_2(mat)
     
         # the above process will be followed
         # in case of each type of move
@@ -88,42 +79,46 @@ def run(user_input):
     
         # to move down
         elif(user_input == 's'):
-            user_input = None
             mat, flag = logic.move_down(mat)
-            status = logic.get_current_state(mat)
-            #print(status)
-            if(status == 'GAME NOT OVER'):
-                logic.add_new_2(mat)
     
         # to move left
         elif(user_input == 'a'):
-            user_input = None
             mat, flag = logic.move_left(mat)
-            status = logic.get_current_state(mat)
-            #print(status)
-            if(status == 'GAME NOT OVER'):
-                logic.add_new_2(mat)
     
         # to move right
         elif(user_input == 'd'):
-            user_input = None
             mat, flag = logic.move_right(mat)
-            status = logic.get_current_state(mat)
-            #print(status)
-            if(status == 'GAME NOT OVER'):
-                logic.add_new_2(mat)
-        else:
-            print("Invalid Key Pressed")
-    
-        # print the matrix after each
-        # move.
+
+        # get the current status
+        status = logic.get_current_state(mat)
+        if(status == 'GAME NOT OVER'):
+            logic.add_new_2(mat)
+        #elif(status == 'WON'):
+        #    global cont
+        #    text = lv.label(cont)
+        #    text.set_text('YOU WON')
+        #    text.center()
+        #if(status == 'LOST'):
+        #    global cont
+        #    text = lv.label(cont)
+        #    text.set_text('GAME OVER')
+        #    text.center()
+            
+        # change the matrix after each move.
         for i in range (4):
             for j in range(4):
-                print(mat[i][j], end = " ")
-            print()
+                global cont
+                pos = 4*i+j
+                tile = cont.get_child(pos)
+                label = tile.get_child(0)
+                tile.set_style_bg_color(lv.color_hex(cm.color_map[str(mat[i][j])]), 0)
+                if(mat[i][j] == 0):
+                    label.set_text(' ')
+                elif(mat[i]):
+                    label.set_text(str(mat[i][j]))
 
     except Exception as e:
-        print(e)
+        pass
 
 def main():
     d = display_tools.get_display()
