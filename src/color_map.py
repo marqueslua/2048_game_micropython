@@ -1,0 +1,12 @@
+color_map = {}
+color_map['0'] = 0xFFFFFF
+color_map['2'] = 0xF8BBD0
+color_map['4'] = 0xCE93D8
+color_map['8'] = 0x64BBF6
+color_map['16'] = 0x26C6DA
+color_map['32'] = 0x26A69A
+color_map['64'] = 0xC0CA33
+color_map['128'] = 0x827717
+color_map['256'] = 0xDB8C00
+color_map['1024'] = 0xE65100
+color_map['2048'] = 0xBF360C
