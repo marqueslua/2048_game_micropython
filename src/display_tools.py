@@ -4,7 +4,7 @@ import lvgl as lv
 
 import stm32f429disc_disp
 
-from device_tools import _getinstance
+from src.device_tools import _getinstance
 
 
 def get_display(calibration_values=[-3, 16, 247, 337]):
