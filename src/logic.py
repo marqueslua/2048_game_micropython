@@ -192,7 +192,7 @@ def move_left(grid):
     changed = changed1 or changed2
  
     # again compress after merging.
-    new_grid, temp = compress(new_grid)
+    new_grid, _ = compress(new_grid)
  
     # return new matrix and bool changed
     # telling whether the grid is same
