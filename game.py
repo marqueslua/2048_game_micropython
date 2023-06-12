@@ -1,3 +1,7 @@
+'''
+Old game version. Here, no RTOS concepts are applied.
+'''
+
 import lvgl as lv
 from src import display_tools
 from src import logic
@@ -93,16 +97,17 @@ def run(user_input):
         status = logic.get_current_state(mat)
         if(status == 'GAME NOT OVER'):
             logic.add_new_2(mat)
-        #elif(status == 'WON'):
-        #    global cont
-        #    text = lv.label(cont)
-        #    text.set_text('YOU WON')
-        #    text.center()
-        #if(status == 'LOST'):
-        #    global cont
-        #    text = lv.label(cont)
-        #    text.set_text('GAME OVER')
-        #    text.center()
+        
+        elif(status == 'WON'):
+            global cont
+            text = lv.label(cont)
+            text.set_text('YOU WON')
+            text.center()
+        if(status == 'LOST'):
+            global cont
+            text = lv.label(cont)
+            text.set_text('GAME OVER')
+            text.center()
             
         # change the matrix after each move.
         for i in range (4):
