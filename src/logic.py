@@ -17,7 +17,7 @@ def start_game():
         mat.append([0] * 4)
  
     # printing controls for user
-    print("Write 'gamert.main()' to start game")
+    print("Write 'game_rtos.main()' to start game")
  
     # calling the function to add
     # a new 2 in grid after every step
