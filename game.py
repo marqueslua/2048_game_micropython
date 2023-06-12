@@ -67,6 +67,31 @@ def load_scr():
         label.set_text(' ')
         label.center()
 
+# final of game
+def stop_game(status):
+    # create box in front of game
+    scr = lv.scr_act()
+    box = lv.obj(scr)
+    box.align(lv.ALIGN.CENTER,0,-40)
+    box.set_size(220, 220)
+    text = lv.label(box)
+    text.center()
+    text.align(lv.ALIGN.CENTER,0,0)
+    
+    #print message
+    text.set_recolor(True)
+    if status == 'YOU WON':
+        box.set_style_bg_color(lv.color_hex(0x43A047), lv.PART.MAIN)
+        text.set_text(f"#ffffff {status}#")
+    else:
+        box.set_style_bg_color(lv.color_hex(0xD32F2F), lv.PART.MAIN)
+        text.set_text(f"#ffffff {status}#")
+    
+    # disable button click
+    for i in range(4):
+        but = scr.get_child(i)
+        but.clear_flag(lv.obj.FLAG.CLICKABLE)
+
 # run a command up, down, left or right
 def run(user_input):
     #print(user_input) #-> for debugging on terminal
@@ -99,24 +124,22 @@ def run(user_input):
             logic.add_new_2(mat)
         
         elif(status == 'WON'):
-            global cont
-            text = lv.label(cont)
-            text.set_text('YOU WON')
-            text.center()
-        if(status == 'LOST'):
-            global cont
-            text = lv.label(cont)
-            text.set_text('GAME OVER')
-            text.center()
+            stop_game('YOU WON')
+
+        elif(status == 'LOST'):
+            stop_game('GAME OVER')
             
         # change the matrix after each move.
+        global cont
         for i in range (4):
             for j in range(4):
-                global cont
+                # change color
                 pos = 4*i+j
                 tile = cont.get_child(pos)
-                label = tile.get_child(0)
                 tile.set_style_bg_color(lv.color_hex(cm.color_map[str(mat[i][j])]), 0)
+
+                #change text
+                label = tile.get_child(0)
                 if(mat[i][j] == 0):
                     label.set_text(' ')
                 elif(mat[i]):

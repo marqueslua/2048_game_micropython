@@ -11,8 +11,11 @@ from src import color_map as cm
 
 # creates an empty matrix with an unique tile
 mat = logic.start_game()
+
+# create task to move the blocks
 task_run = None
 
+# define values for notification
 UP = 1
 DOWN = 2
 LEFT = 3
@@ -77,38 +80,55 @@ def load_scr():
         label.set_text(' ')
         label.center()
 
+# final of game
+def stop_game(status):
+    # create box in front of game
+    scr = lv.scr_act()
+    box = lv.obj(scr)
+    box.align(lv.ALIGN.CENTER,0,-40)
+    box.set_size(220, 220)
+    text = lv.label(box)
+    text.center()
+    text.align(lv.ALIGN.CENTER,0,0)
+    
+    #print message
+    text.set_recolor(True)
+    if status == 'YOU WON':
+        box.set_style_bg_color(lv.color_hex(0x43A047), lv.PART.MAIN)
+        text.set_text(f"#ffffff {status}#")
+    else:
+        box.set_style_bg_color(lv.color_hex(0xD32F2F), lv.PART.MAIN)
+        text.set_text(f"#ffffff {status}#")
+    
+    # disable button click
+    for i in range(4):
+        but = scr.get_child(i)
+        but.clear_flag(lv.obj.FLAG.CLICKABLE)
+
 # run a command up, down, left or right
 def run(self):
     ## Setup code
     global mat
 
-    ##
+    ## End of setup code
     yield
 
+    ## Thread loop
     while True:
+        # gets direction
         self.wait_for_notification(index=0, state=1)
         direction = self.notify_get_value(index=0)
         if direction != 0:
             self.notify_set_value(index=0, value=0)
-            # we have to move up
+            # we have to move the blocks
             if(direction == UP):
-                # call the move_up function
                 mat, flag = logic.move_up(mat)
-
-            # the above process will be followed for type of move
-
-            # to move down
             elif(direction == DOWN):
                 mat, flag = logic.move_down(mat)
-
-            # to move left
             elif(direction == LEFT):
                 mat, flag = logic.move_left(mat)
-
-            # to move right
             elif(direction == RIGHT):
                 mat, flag = logic.move_right(mat)
-
 
             # get the current status
             status = logic.get_current_state(mat)
@@ -116,21 +136,14 @@ def run(self):
                 logic.add_new_2(mat)
 
             elif(status == 'WON'):
-                global cont
-                text = lv.label(cont)
-                text.set_text('YOU WON')
-                text.center()
-                print('YOU WON')
+                stop_game('YOU WON')
 
             elif(status == 'LOST'):
-                global cont
-                text = lv.label(cont)
-                text.set_text('GAME OVER')
-                text.center()
-                print('GAME OVER')
+                stop_game('GAME OVER')
 
         yield [pyRTOS.timeout(0.1)]
 
+# update color and numbers of grid
 def grid_update(self):
     ## Setup code
     global cont
@@ -143,15 +156,18 @@ def grid_update(self):
         # change the matrix after each move.
         for i in range (4):
             for j in range(4):
+                #change color
                 pos = 4*i+j
                 tile = cont.get_child(pos)
                 tile.set_style_bg_color(lv.color_hex(colors[str(mat[i][j])]), 0)
                 
+                #change text
                 label = tile.get_child(0)
                 if(mat[i][j] == 0):
                     label.set_text(' ')
                 elif(mat[i]):
                     label.set_text(str(mat[i][j]))
+
         yield [pyRTOS.timeout(0.1)]
 
 def main():
@@ -162,6 +178,8 @@ def main():
         lv_utils.event_loop()
     
     load_scr()
+
+    # add tasks
     global task_run
     task_run = pyRTOS.Task(run, priority=1, name="run", notifications=1)
     pyRTOS.add_task(task_run)
