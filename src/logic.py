@@ -1,9 +1,8 @@
-# logic.py to be
-# imported in the 2048.py file
- 
-# importing random package
-# for methods to generate random
-# numbers.
+'''
+logic.py to be imported in game_rtos.py file
+This logic code was inspired by https://www.geeksforgeeks.org/2048-game-in-python/, 
+with the necessary changes for our environment
+'''
 import random
  
 # function to initialize game / grid
