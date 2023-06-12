@@ -6,6 +6,12 @@ import pyRTOS
 
 # creates an empty matrix with an unique tile
 mat = logic.start_game()
+task_run = None
+
+UP = 1
+DOWN = 2
+LEFT = 3
+RIGHT = 4
 
 # defines an event for pressing the button
 def event_cb(evt):
@@ -14,14 +20,17 @@ def event_cb(evt):
     if btn_label is not None:
         text = btn_label.get_text()
         if text == "^":
-            direction = 0
+            direction = UP
         elif text == "v":
-            direction = 1
+            direction = DOWN
         elif text == "<":
-            direction = 2
+            direction = LEFT
         else:
-            direction = 3
-    runtsk.notify_set_value(index=0, state=1, value=direction)
+            direction = RIGHT
+
+    global task_run
+    task_run.notify_set_value(index=0, state=1, value=direction)
+    print(f"Send {direction}")
 
 def create_button(lbl, dx, dy):
     bt = lv.btn(lv.scr_act())
@@ -66,68 +75,79 @@ def load_scr():
 
 # run a command up, down, left or right
 def run(self):
+    ## Setup code
     global mat
-    try:
-        direction = self.notify_get_value(index=0)
-        # we have to move up
-        if(direction == 0):
-            # call the move_up function
-            mat, flag = logic.move_up(mat)
-    
-        # the above process will be followed
-        # in case of each type of move
-        # below
-    
-        # to move down
-        elif(direction == 1):
-            mat, flag = logic.move_down(mat)
-    
-        # to move left
-        elif(direction == 2):
-            mat, flag = logic.move_left(mat)
-    
-        # to move right
-        elif(direction == 2):
-            mat, flag = logic.move_right(mat)
 
-        # get the current status
-        status = logic.get_current_state(mat)
-        if(status == 'GAME NOT OVER'):
-            logic.add_new_2(mat)
-        #elif(status == 'WON'):
-        #    global cont
-        #    text = lv.label(cont)
-        #    text.set_text('YOU WON')
-        #    text.center()
-        #if(status == 'LOST'):
-        #    global cont
-        #    text = lv.label(cont)
-        #    text.set_text('GAME OVER')
-        #    text.center()
-            
+    ##
+    yield
+
+    while True:
+        self.wait_for_notification(index=0, state=1)
+        direction = self.notify_get_value(index=0)
+        if direction != 0:
+            print("Run")
+            self.notify_set_value(index=0, value=0)
+            # we have to move up
+            if(direction == UP):
+                # call the move_up function
+                mat, flag = logic.move_up(mat)
+
+            # the above process will be followed for type of move
+
+            # to move down
+            elif(direction == DOWN):
+                mat, flag = logic.move_down(mat)
+
+            # to move left
+            elif(direction == LEFT):
+                mat, flag = logic.move_left(mat)
+
+            # to move right
+            elif(direction == RIGHT):
+                mat, flag = logic.move_right(mat)
+
+            # get the current status
+            status = logic.get_current_state(mat)
+            if(status == 'GAME NOT OVER'):
+                logic.add_new_2(mat)
+                
+            #elif(status == 'WON'):
+            #    global cont
+            #    text = lv.label(cont)
+            #    text.set_text('YOU WON')
+            #    text.center()
+            #if(status == 'LOST'):
+            #    global cont
+            #    text = lv.label(cont)
+            #    text.set_text('GAME OVER')
+            #    text.center()
+
+        yield [pyRTOS.timeout(0.1)]
+
+def grid_update(self):
+    print("Update - setup")
+    ## Setup code
+    global cont
+    global mat
+    colors = cm.color_map
+    ## End setup code
+    yield
+
+    while True:
+        print("Update")
         # change the matrix after each move.
         for i in range (4):
             for j in range(4):
-                global cont
                 pos = 4*i+j
                 tile = cont.get_child(pos)
+                tile.set_style_bg_color(lv.color_hex(colors[str(mat[i][j])]), 0)
+                
                 label = tile.get_child(0)
-                tile.set_style_bg_color(lv.color_hex(cm.color_map[str(mat[i][j])]), 0)
                 if(mat[i][j] == 0):
                     label.set_text(' ')
                 elif(mat[i]):
                     label.set_text(str(mat[i][j]))
-
-    except Exception as e:
-        pass
-
-    yield [pyRTOS.timeout(0.100)]
-
-#def grid_update(self):
-#    
-#    yield [pyRTOS.timeout(0.100)]
-
-runtsk = pyRTOS.Task(run, priority=1, name="run", notifications=1)
+        yield [pyRTOS.timeout(0.1)]
 
 def main():
     d = display_tools.get_display()
@@ -137,9 +157,10 @@ def main():
         lv_utils.event_loop()
     
     load_scr()
-    global runtsk
-    pyRTOS.add_task(runtsk)
-    #pyRTOS.add_task(pyRTOS.Task(grid_update, priority=2, name="update"))
+    global task_run
+    task_run = pyRTOS.Task(run, priority=1, name="run", notifications=1)
+    pyRTOS.add_task(task_run)
+    pyRTOS.add_task(pyRTOS.Task(grid_update, priority=2, name="update"))
     
     pyRTOS.start()
 
