@@ -4,7 +4,7 @@ A version of the game [2048](https://en.wikipedia.org/wiki/2048_(video_game)) in
 
 Made as final project of the discipline of Realtime Computing, as it applies concepts of Real-Time Operating Systems.
 
-![Screen Game](./screen.png)
+![Screen Game](./game-2048.gif)
 
 ### Contributions
 
