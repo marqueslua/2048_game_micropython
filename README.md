@@ -22,6 +22,8 @@ mpremote mount .
 ```python
 import game_rtos
 ```
+> This is the version of the game where RTOS concepts are applied. The original version is also available on file [game.py](./game.py)
+
 7. Execute the `game_rtos.main()` function to start the application:
 ```python
 game_rtos.main()
