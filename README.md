@@ -28,5 +28,7 @@ game_rtos.main()
 ```
 ### Contributions
 
-[Pietro Cardoso](https://github.com/Pietro19) and [Pedro Piccichelli](https://github.com/Piccichelli) are also contributers of this repository.
+[@Pietro19](https://github.com/Pietro19) and [@Piccichelli](https://github.com/Piccichelli) are also contributers of this repository.
 Make sure to follow these instructions in order to run the application successfully.
+
+The logic of the game was adapted from [GeeksforGeeks portal](https://www.geeksforgeeks.org/2048-game-in-python/).
